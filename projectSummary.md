@@ -7,7 +7,7 @@
 
 > Implemented secure IAM infrastructure for a startup that was sharing AWS root account credentials. This project established proper role-based access control (RBAC) and eliminated critical security vulnerabilities.
 
--View DOCUMENTATION.md to view full journey of this project
+🚨 VIEW DOCUMENTATION.md TO SEE FULL JOURNEY OF PROJECT 🚨
 
 ---
 
