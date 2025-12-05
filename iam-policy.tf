@@ -17,30 +17,21 @@ resource "aws_iam_policy" "require_mfa" {
           "iam:ListMFADevices",
           "iam:ChangePassword"
         ]
-        Resource = "arn:aws:iam::*:user/$${aws:username}"
-      },
-      {
-        Sid      = "DenyAllWithoutMFA"
-        Effect   = "Deny"
-        NotAction = [
-          "iam:CreateVirtualMFADevice",
-          "iam:EnableMFADevice",
-          "iam:GetUser",
-          "iam:ListMFADevices",
-          "iam:ChangePassword"
+        Resource = [
+          "arn:aws:iam::*:user/$${aws:username}",
+          "arn:aws:iam::*:mfa/$${aws:username}"
         ]
-        Resource = "*"
-        Condition = {
-          BoolIfExists = {
-            "aws:MultiFactorAuthPresent" = "false"
-          }
-        }
       }
-    ]
-  })
+    ]}
+  )
 }
 
-# Developer Policy
+
+# No Custom Finance policy because AWS managed policies were sufficient enough
+# View iam-groups.tf to see policies used for Finance user
+
+
+# Developer
 resource "aws_iam_policy" "dev_policy" {
   name = "DeveloperAccess"
 
@@ -48,9 +39,17 @@ resource "aws_iam_policy" "dev_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "AllowDescribeEC2"
         Effect = "Allow"
         Action = [
-          "ec2:Describe*",
+          "ec2:Describe*"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowDevEC2Actions"
+        Effect = "Allow"
+        Action = [
           "ec2:StartInstances",
           "ec2:StopInstances",
           "ec2:RebootInstances"
@@ -63,6 +62,16 @@ resource "aws_iam_policy" "dev_policy" {
         }
       },
       {
+        Sid    = "AllowS3ConsoleAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:ListAllMyBuckets",     
+          "s3:GetBucketLocation"      
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowDevS3Access"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
@@ -70,8 +79,8 @@ resource "aws_iam_policy" "dev_policy" {
           "s3:ListBucket"
         ]
         Resource = [
-          "arn:aws:s3:::startupco-app-dev",
-          "arn:aws:s3:::startupco-app-dev/*"
+          "arn:aws:s3:::startupco-*-dev",       
+          "arn:aws:s3:::startupco-*-dev/*"
         ]
       }
     ]
@@ -116,6 +125,16 @@ resource "aws_iam_policy" "analyst_policy" {
     Version = "2012-10-17"
     Statement = [
       {
+        Sid    = "AllowS3ConsoleAccess"
+        Effect = "Allow"
+        Action = [
+          "s3:ListAllMyBuckets",      # ← ADD THIS
+          "s3:GetBucketLocation"      # ← ADD THIS
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowAnalystS3Read"
         Effect = "Allow"
         Action = [
           "s3:GetObject",
@@ -127,6 +146,7 @@ resource "aws_iam_policy" "analyst_policy" {
         ]
       },
       {
+        Sid    = "AllowRDSDescribe"
         Effect = "Allow"
         Action = [
           "rds:DescribeDBInstances"
