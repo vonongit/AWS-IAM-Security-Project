@@ -10,6 +10,10 @@ This document walks through my experience implementing this IAM security solutio
 
 **My Goal:** Set up proper IAM with individual accounts, role-based permissions, and MFA enforcement.
 
+
+![iam-architecture-overview](screenshots/iam-architecture-overview.png)
+
+
 ---
 
 # 🎯 Phase 1: Planning & Research
